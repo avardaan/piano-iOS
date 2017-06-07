@@ -22,6 +22,8 @@ var hlKey = "C/Am"
 var mute = "off"
 // arpeggio interval set by user
 var arpInterval = 0.5
+// global var to remember octave
+var octave = 0
 
 
 class SettingsView: UIViewController

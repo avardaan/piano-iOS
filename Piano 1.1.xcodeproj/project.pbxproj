@@ -88,6 +88,7 @@
 		933D23A81E5A996000BC90E9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 933D23A71E5A996000BC90E9 /* SettingsView.swift */; };
 		9355E1E81E8CDE2700D74725 /* D#1.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 9355E1E71E8CDE2700D74725 /* D#1.mp3 */; };
 		93721D601E774A3F00CFAB5A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 93721D5F1E774A3F00CFAB5A /* GoogleService-Info.plist */; };
+		93F6442A1EDBA1C300C63611 /* HelpController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93F644291EDBA1C300C63611 /* HelpController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -175,6 +176,7 @@
 		933D23A71E5A996000BC90E9 /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9355E1E71E8CDE2700D74725 /* D#1.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "D#1.mp3"; sourceTree = "<group>"; };
 		93721D5F1E774A3F00CFAB5A /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		93F644291EDBA1C300C63611 /* HelpController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelpController.swift; sourceTree = "<group>"; };
 		D407263AB446947A4909F344 /* Pods-Piano.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Piano.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Piano/Pods-Piano.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -217,6 +219,7 @@
 				9329F4291E4C1A2300429229 /* Main.storyboard */,
 				9329F4271E4C1A2300429229 /* ViewController.swift */,
 				933D23A71E5A996000BC90E9 /* SettingsView.swift */,
+				93F644291EDBA1C300C63611 /* HelpController.swift */,
 				9329F42C1E4C1A2300429229 /* Assets.xcassets */,
 				9329F42E1E4C1A2300429229 /* LaunchScreen.storyboard */,
 				9329F4311E4C1A2300429229 /* Info.plist */,
@@ -519,6 +522,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93F6442A1EDBA1C300C63611 /* HelpController.swift in Sources */,
 				933D23A81E5A996000BC90E9 /* SettingsView.swift in Sources */,
 				9329F4281E4C1A2300429229 /* ViewController.swift in Sources */,
 				9329F4261E4C1A2300429229 /* AppDelegate.swift in Sources */,

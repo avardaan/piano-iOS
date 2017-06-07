@@ -21,8 +21,16 @@ class ViewController: UIViewController
     // array of piano sounds
     var pianoSounds = ["C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6"]
     
+    
     // initialize empty audio array
     var soundsArray = [AVAudioPlayer]()
+    
+    // audio players to use for arpeggio and chord
+    var root = AVAudioPlayer()
+    var third = AVAudioPlayer()
+    var fifth = AVAudioPlayer()
+    
+    
     
     
     // KEY LABEL OUTLETS
@@ -116,34 +124,27 @@ class ViewController: UIViewController
         // round labels
         roundLabels()
         
+        // remember octave
+        octaveHandler(stepperat: octave)
+        
         // highlight appropriate key, if any
         highlighter()
         
         // mute notes off key, if required
         muter()
         
-        // sounds load up. for every note in pianoSounds, load into app.
-        for note in pianoSounds
-        {
-            do
-            {
-                // create url for the sound using it's name from the array
-                let url = URL(fileURLWithPath: Bundle.main.path(forResource: note, ofType: "mp3")!)
-                // assign that sound to audioPlayer
-                let pianoNote = try AVAudioPlayer(contentsOf: url)
-                // add this audioPlayer to the array of ACTUAL SOUNDS in order because LOOP
-                soundsArray.append(pianoNote)
-                // preloads buffers, minimizes hardware delay
-                pianoNote.prepareToPlay()
-            }
-                
-                // catch errors
-            catch
-            { // insert empty audio to avoid misplacement
-                soundsArray.append(AVAudioPlayer())
-            }
+        // hide chord toggle if chord/arpeggio is off
+        hideChordToggle()
+        
+        // load sustain notes into soundsArray
+        sustainNoteLoader()
+        
+        do
+        { try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback) }
+        catch
+        { // report for an error 
         }
- 
+        
     }
     
     override func didReceiveMemoryWarning()
@@ -162,6 +163,8 @@ class ViewController: UIViewController
     {
         octaveHandler(stepperat: Int(sender.value))
         highlighter()
+        // push value into global variable to remember when coming back from settings
+        octave = Int(sender.value)
         
     }
     
@@ -190,7 +193,6 @@ class ViewController: UIViewController
         // play chord is off, just play note
         if (playChord == "off" && arpeggiate == "off")
         {
-        note.currentTime = 0
         note.setVolume(3.0, fadeDuration: 1.0)
         note.play()
         }
@@ -1215,23 +1217,59 @@ class ViewController: UIViewController
         }
     }
     
-    // BEHIND THE SCENES
+    // CUSTOM FUNCTIONS
+    
+    
+    
+    func sustainNoteLoader()
+    {
+        // sounds load up. for every note in pianoSounds, load into app.
+        for note in pianoSounds
+        {
+            do
+            {
+                // create url for the sound using it's name from the array
+                let url = URL(fileURLWithPath: Bundle.main.path(forResource: note, ofType: "mp3")!)
+                // assign that sound to audioPlayer
+                let pianoNote = try AVAudioPlayer(contentsOf: url)
+                // add this audioPlayer to the array of ACTUAL SOUNDS in order because LOOP
+                soundsArray.append(pianoNote)
+                // preloads buffers, minimizes hardware delay
+                pianoNote.prepareToPlay()
+            }
+                
+                // catch errors
+            catch
+            { // insert empty audio to avoid misplacement
+                soundsArray.append(AVAudioPlayer())
+            }
+        }
+    }
     
     // function to implement chord playing
     func chord(tag: Int)
     {
         // get root note and fifth from sounds array
-        let root = soundsArray[tag]
-        let fifth = soundsArray[tag + 7]
+        root = soundsArray[tag]
+        fifth = soundsArray[tag + 7]
         
         if chordType == "Major"
         {
             // get MAJOR third
-            let third = soundsArray[tag + 4]
+            third = soundsArray[tag + 4]
+            
+            // override old chord for new chord
+            if (root.isPlaying || third.isPlaying || fifth.isPlaying)
+            {
+                root.stop()
+                root.currentTime = 0.0
+                third.stop()
+                third.currentTime = 0.0
+                fifth.stop()
+                fifth.currentTime = 0.0
+            }
+            
             // play chord
-            root.currentTime = 0.0
-            third.currentTime = 0.0
-            fifth.currentTime = 0.0
             root.play()
             third.play(atTime: root.deviceCurrentTime)
             fifth.play(atTime: root.deviceCurrentTime)
@@ -1240,33 +1278,79 @@ class ViewController: UIViewController
         else // if chordType == "Minor"
         {
             // get MINOR third
-            let third = soundsArray[tag + 3]
+            third = soundsArray[tag + 3]
+            // override old chord for new chord
+            if (root.isPlaying || third.isPlaying || fifth.isPlaying)
+            {
+                root.stop()
+                root.currentTime = 0.0
+                third.stop()
+                third.currentTime = 0.0
+                fifth.stop()
+                fifth.currentTime = 0.0
+            }
+            
             // play chord
-            root.currentTime = 0.0
-            third.currentTime = 0.0
-            fifth.currentTime = 0.0
             root.play()
             third.play(atTime: root.deviceCurrentTime)
             fifth.play(atTime: root.deviceCurrentTime)
         }
     }
     
+    
+    /*
+    // alternate implementation URGGGHHH
+    func arpeggiator(tag: Int)
+    {
+        let arpeggio: [AVAudioPlayer] = [ soundsArray[tag], soundsArray[tag+3], soundsArray[tag+4], soundsArray[tag+7]  ]
+        
+        for sound in arpeggio
+        { sound.prepareToPlay() }
+        
+        if chordType == "Major"
+        {
+            arpeggio[0].play()
+            arpeggio[2].play(atTime: arpeggio[0].deviceCurrentTime + arpInterval)
+            arpeggio[3].play(atTime: arpeggio[0].deviceCurrentTime + (2*arpInterval))
+        }
+        
+        else // if chord minor
+        {
+            arpeggio[0].play()
+            arpeggio[1].play(atTime: arpeggio[0].deviceCurrentTime + arpInterval)
+            arpeggio[3].play(atTime: arpeggio[0].deviceCurrentTime + (2*arpInterval))
+        }
+        
+    }
+    */
+    
+    
     // function to implement arpeggio
     func arpeggiator(tag: Int)
     {
+        
+        
+        
         // get root note and fifth from sounds array
-        let root = soundsArray[tag]
-        let fifth = soundsArray[tag + 7]
-        root.stop()
-        fifth.stop()
+        root = soundsArray[tag]
+        fifth = soundsArray[tag + 7]
         
         if chordType == "Major"
         {
             // get MAJOR third
-            let third = soundsArray[tag + 4]
+            third = soundsArray[tag + 4]
+            // override old arpeggio for new arpeggio
+            if (root.isPlaying || third.isPlaying || fifth.isPlaying)
+            {
+                root.stop()
+                root.currentTime = 0.0
+                third.stop()
+                third.currentTime = 0.0
+                fifth.stop()
+                fifth.currentTime = 0.0
+            }
+            
             // play arpeggio
-            third.stop()
-            fifth.stop()
             root.play()
             third.play(atTime: root.deviceCurrentTime + arpInterval)
             fifth.play(atTime: root.deviceCurrentTime + (2*arpInterval))
@@ -1275,7 +1359,18 @@ class ViewController: UIViewController
         else // if chordType == "Minor"
         {
             // get MINOR third
-            let third = soundsArray[tag + 3]
+            third = soundsArray[tag + 3]
+            // override old arpeggio for new arpeggio
+            if (root.isPlaying || third.isPlaying || fifth.isPlaying)
+            {
+                root.stop()
+                root.currentTime = 0.0
+                third.stop()
+                third.currentTime = 0.0
+                fifth.stop()
+                fifth.currentTime = 0.0
+            }
+            
             // play arpeggio
             third.stop()
             root.play()
@@ -1283,6 +1378,7 @@ class ViewController: UIViewController
             fifth.play(atTime: root.deviceCurrentTime + (2*arpInterval))
         }
     }
+ 
     
     // this functions rounds the corners of the label before the view appears on screen
     // used in viewDidLoad
@@ -2060,6 +2156,13 @@ class ViewController: UIViewController
             
             
         }
+    }
+    
+    // hide chord toggle if user doesn't want chords/arpeggios
+    func hideChordToggle()
+    {
+        if (playChord == "off" && arpeggiate == "off")
+        { typeButton.alpha = 0.0 }
     }
     
     
