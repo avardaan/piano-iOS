@@ -18,17 +18,25 @@ class ViewController: UIViewController
 {
     
     
-    // array of piano sounds
+    // array of sustained piano sounds
+    var sustainSounds = ["C1s", "C#1s", "D1s", "D#1s", "E1s", "F1s", "F#1s", "G1s", "G#1s", "A1s", "A#1s", "B1s", "C2s", "C#2s", "D2s", "D#2s", "E2s", "F2s", "F#2s", "G2s", "G#2s", "A2s", "A#2s", "B2s", "C3s", "C#3s", "D3s", "D#3s", "E3s", "F3s", "F#3s", "G3s", "G#3s", "A3s", "A#3s", "B3s", "C4s", "C#4s", "D4s", "D#4s", "E4s", "F4s", "F#4s", "G4s", "G#4s", "A4s", "A#4s", "B4s", "C5s", "C#5s", "D5s", "D#5s", "E5s", "F5s", "F#5s", "G5s", "G#5s", "A5s", "A#5s", "B5s", "C6s", "C#6s", "D6s", "D#6s", "E6s", "F6s", "F#6s", "G6s", "G#6s"]
+    
+    // array of sustained piano sounds
     var pianoSounds = ["C1", "C#1", "D1", "D#1", "E1", "F1", "F#1", "G1", "G#1", "A1", "A#1", "B1", "C2", "C#2", "D2", "D#2", "E2", "F2", "F#2", "G2", "G#2", "A2", "A#2", "B2", "C3", "C#3", "D3", "D#3", "E3", "F3", "F#3", "G3", "G#3", "A3", "A#3", "B3", "C4", "C#4", "D4", "D#4", "E4", "F4", "F#4", "G4", "G#4", "A4", "A#4", "B4", "C5", "C#5", "D5", "D#5", "E5", "F5", "F#5", "G5", "G#5", "A5", "A#5", "B5", "C6", "C#6", "D6", "D#6", "E6", "F6", "F#6", "G6", "G#6"]
     
     
     // initialize empty audio array
     var soundsArray = [AVAudioPlayer]()
     
+    // variable for single
+    
     // audio players to use for arpeggio and chord
     var root = AVAudioPlayer()
     var third = AVAudioPlayer()
     var fifth = AVAudioPlayer()
+    var root2 = AVAudioPlayer()
+    var third2 = AVAudioPlayer()
+    var fifth2 = AVAudioPlayer()
     
     
     
@@ -137,7 +145,7 @@ class ViewController: UIViewController
         hideChordToggle()
         
         // load sustain notes into soundsArray
-        sustainNoteLoader()
+        noteLoader()
         
         do
         { try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback) }
@@ -1221,29 +1229,61 @@ class ViewController: UIViewController
     
     
     
-    func sustainNoteLoader()
+    func noteLoader()
     {
-        // sounds load up. for every note in pianoSounds, load into app.
-        for note in pianoSounds
-        {
-            do
+        //if (sustain == "on")
+        //{
+            // sounds load up. for every note in pianoSounds, load into app.
+            for note in sustainSounds
             {
-                // create url for the sound using it's name from the array
-                let url = URL(fileURLWithPath: Bundle.main.path(forResource: note, ofType: "mp3")!)
-                // assign that sound to audioPlayer
-                let pianoNote = try AVAudioPlayer(contentsOf: url)
-                // add this audioPlayer to the array of ACTUAL SOUNDS in order because LOOP
-                soundsArray.append(pianoNote)
-                // preloads buffers, minimizes hardware delay
-                pianoNote.prepareToPlay()
-            }
+                do
+                {
+                    // create url for the sound using it's name from the array
+                    let url = URL(fileURLWithPath: Bundle.main.path(forResource: note, ofType: "mp3")!)
+                    // assign that sound to audioPlayer
+                    let pianoNote = try AVAudioPlayer(contentsOf: url)
+                    // add this audioPlayer to the array of ACTUAL SOUNDS in order because LOOP
+                    soundsArray.append(pianoNote)
+                    // preloads buffers, minimizes hardware delay
+                    pianoNote.prepareToPlay()
+                }
                 
                 // catch errors
-            catch
-            { // insert empty audio to avoid misplacement
-                soundsArray.append(AVAudioPlayer())
+                catch
+                { // insert empty audio to avoid misplacement
+                    soundsArray.append(AVAudioPlayer())
+                }
             }
+        //}
+        
+        /*
+        else // sustain == off
+        {
+            // sounds load up. for every note in pianoSounds, load into app.
+            for note in pianoSounds
+            {
+                do
+                {
+                    // create url for the sound using it's name from the array
+                    let url = URL(fileURLWithPath: Bundle.main.path(forResource: note, ofType: "mp3")!)
+                    // assign that sound to audioPlayer
+                    let pianoNote = try AVAudioPlayer(contentsOf: url)
+                    // add this audioPlayer to the array of ACTUAL SOUNDS in order because LOOP
+                    soundsArray.append(pianoNote)
+                    // preloads buffers, minimizes hardware delay
+                    pianoNote.prepareToPlay()
+                }
+                    
+                    // catch errors
+                catch
+                { // insert empty audio to avoid misplacement
+                    soundsArray.append(AVAudioPlayer())
+                }
+            }
+
         }
+        */
+        
     }
     
     // function to implement chord playing
@@ -1325,57 +1365,99 @@ class ViewController: UIViewController
     */
     
     
+    // function to stop all notes
+    func noteStopper()
+    {
+        // if any of these notes are playing, stop them
+        if (root.isPlaying || third.isPlaying || fifth.isPlaying || root2.isPlaying || third2.isPlaying || fifth2.isPlaying)
+        {
+            root.stop()
+            root.currentTime = 0.0
+            third.stop()
+            third.currentTime = 0.0
+            fifth.stop()
+            fifth.currentTime = 0.0
+            
+            root2.stop()
+            root2.currentTime = 0.0
+            third2.stop()
+            third2.currentTime = 0.0
+            fifth2.stop()
+            fifth2.currentTime = 0.0
+            
+        }
+
+    }
+    
     // function to implement arpeggio
     func arpeggiator(tag: Int)
     {
-        
-        
-        
         // get root note and fifth from sounds array
         root = soundsArray[tag]
         fifth = soundsArray[tag + 7]
+        root2 = soundsArray[tag + 12]
+        fifth2 = soundsArray[tag + 7 + 12]
         
-        if chordType == "Major"
+        if (arpRange == 3)
         {
-            // get MAJOR third
-            third = soundsArray[tag + 4]
-            // override old arpeggio for new arpeggio
-            if (root.isPlaying || third.isPlaying || fifth.isPlaying)
+            if chordType == "Major"
             {
-                root.stop()
-                root.currentTime = 0.0
-                third.stop()
-                third.currentTime = 0.0
-                fifth.stop()
-                fifth.currentTime = 0.0
+                // get MAJOR third
+                third = soundsArray[tag + 4]
+                // override old arpeggio for new arpeggio
+                noteStopper()
+                // play arpeggio
+                root.play()
+                third.play(atTime: root.deviceCurrentTime + arpInterval)
+                fifth.play(atTime: root.deviceCurrentTime + (2*arpInterval))
             }
             
-            // play arpeggio
-            root.play()
-            third.play(atTime: root.deviceCurrentTime + arpInterval)
-            fifth.play(atTime: root.deviceCurrentTime + (2*arpInterval))
+            else // if chordType == "Minor"
+            {
+                // get MINOR third
+                third = soundsArray[tag + 3]
+                // override old arpeggio for new arpeggio
+                noteStopper()
+                // play arpeggio
+                root.play()
+                third.play(atTime: root.deviceCurrentTime + arpInterval)
+                fifth.play(atTime: root.deviceCurrentTime + (2*arpInterval))
+            }
         }
-            
-        else // if chordType == "Minor"
+        
+        else // arpRange is 6
         {
-            // get MINOR third
-            third = soundsArray[tag + 3]
-            // override old arpeggio for new arpeggio
-            if (root.isPlaying || third.isPlaying || fifth.isPlaying)
+            if chordType == "Major"
             {
-                root.stop()
-                root.currentTime = 0.0
-                third.stop()
-                third.currentTime = 0.0
-                fifth.stop()
-                fifth.currentTime = 0.0
+                // get MAJOR third
+                third = soundsArray[tag + 4]
+                third2 = soundsArray[tag + 4 + 12]
+                // override old arpeggio for new arpeggio
+                noteStopper()
+                // play arpeggio
+                root.play()
+                third.play(atTime: root.deviceCurrentTime + arpInterval)
+                fifth.play(atTime: root.deviceCurrentTime + (2*arpInterval))
+                root2.play(atTime: root.deviceCurrentTime + (3*arpInterval))
+                third2.play(atTime: root.deviceCurrentTime + (4*arpInterval))
+                fifth2.play(atTime: root.deviceCurrentTime + (5*arpInterval))
+                
             }
-            
-            // play arpeggio
-            third.stop()
-            root.play()
-            third.play(atTime: root.deviceCurrentTime + arpInterval)
-            fifth.play(atTime: root.deviceCurrentTime + (2*arpInterval))
+                
+            else // if chordType == "Minor"
+            {
+                // get MINOR third
+                third = soundsArray[tag + 3]
+                // override old arpeggio for new arpeggio
+                noteStopper()
+                // play arpeggio
+                root.play()
+                third.play(atTime: root.deviceCurrentTime + arpInterval)
+                fifth.play(atTime: root.deviceCurrentTime + (2*arpInterval))
+                root2.play(atTime: root.deviceCurrentTime + (3*arpInterval))
+                third2.play(atTime: root.deviceCurrentTime + (4*arpInterval))
+                fifth2.play(atTime: root.deviceCurrentTime + (5*arpInterval))
+            }
         }
     }
  
