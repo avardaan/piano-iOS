@@ -1369,7 +1369,7 @@ class ViewController: UIViewController
     func noteStopper()
     {
         // if any of these notes are playing, stop them
-        if (root.isPlaying || third.isPlaying || fifth.isPlaying || root2.isPlaying || third2.isPlaying || fifth2.isPlaying)
+        if ((arpRange == 6) && (root.isPlaying || third.isPlaying || fifth.isPlaying || root2.isPlaying || third2.isPlaying || fifth2.isPlaying))
         {
             root.stop()
             root.currentTime = 0.0
@@ -1385,6 +1385,16 @@ class ViewController: UIViewController
             fifth2.stop()
             fifth2.currentTime = 0.0
             
+        }
+        
+        // arpRange is 3 so only stop root, third and fith
+        else if (root.isPlaying || third.isPlaying || fifth.isPlaying) {
+            root.stop()
+            root.currentTime = 0.0
+            third.stop()
+            third.currentTime = 0.0
+            fifth.stop()
+            fifth.currentTime = 0.0
         }
 
     }
@@ -1448,6 +1458,7 @@ class ViewController: UIViewController
             {
                 // get MINOR third
                 third = soundsArray[tag + 3]
+                third2 = soundsArray[tag + 3 + 12]
                 // override old arpeggio for new arpeggio
                 noteStopper()
                 // play arpeggio

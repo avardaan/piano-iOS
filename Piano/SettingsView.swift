@@ -36,13 +36,6 @@ class SettingsView: UIViewController
     // chord toggle
     @IBOutlet weak var chordSwitch: UISwitch!
     
-    // chord switch left and right
-    @IBOutlet weak var typeLeft: UIButton!
-    @IBOutlet weak var typeRight: UIButton!
-    
-    // scale label
-    @IBOutlet weak var scaleLabel: UILabel!
-    
     // arpeggio switch
     @IBOutlet weak var arpeggioSwitch: UISwitch!
     
@@ -275,27 +268,6 @@ class SettingsView: UIViewController
     }
     
     
-    
-    
-    // right key button for chord type
-    @IBAction func typeRight(_ sender: UIButton)
-    {
-        // on button press, change text to next in the array using modulus, and increment counter
-        scaleCount = (scaleCount + 1) % 2
-        scaleLabel.text = scaleOptions[scaleCount]
-        chordType = scaleLabel.text!
-    }
-    
-    // left key button for chord type
-    @IBAction func typeLeft(_ sender: UIButton)
-    {
-        // on button press, change text to previous in the array using modulus, and increment counter
-        scaleCount = (scaleCount + 1) % 2
-        scaleLabel.text = scaleOptions[scaleCount]
-        chordType = scaleLabel.text!
-    }
-    
-    
     func dimButtons()
     {
         let alphaOff = CGFloat(0.6)
@@ -333,22 +305,6 @@ class SettingsView: UIViewController
             
         }
 
-        
-        if (playChord == "off")
-        {
-            // set chord left and right and chord type label
-            typeLeft.alpha = alphaOff
-            typeRight.alpha = alphaOff
-            scaleLabel.alpha = alphaOff
-        }
-        
-        else if (playChord == "on")
-        {
-            // set chord left and right and chord type label
-            typeLeft.alpha = alphaOn
-            typeRight.alpha = alphaOn
-            scaleLabel.alpha = alphaOn
-        }
     }
  
     
@@ -388,9 +344,6 @@ class SettingsView: UIViewController
         
         // set text of hideNotes to global variable
         offKeyLabel.text = hideNotes
-        
-        // set text of chord type label to global chord type
-        scaleLabel.text = chordType
         
         // set text of highlight key label to global hlKey
         keyLabel.text = hlKey
