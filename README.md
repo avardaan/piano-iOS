@@ -1,4 +1,4 @@
-Version 1.2 of my Piano App for iOS is currently on the App Store.
+Version 1.21 of my Piano App for iOS is currently on the App Store.
 Check it out - https://itunes.apple.com/US/app/id1208260183?mt=8
 
 Distinct features of the app include
